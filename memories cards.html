@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>水果記憶卡對戰 (連擊版)</title>
+    <title>水果記憶卡對戰 (人機 VS)</title>
     <style>
         :root {
             --bg-color: #f0f4f8;
@@ -12,7 +12,7 @@
             --text-color: #2d3436;
             --accent-player: #0984e3;
             --accent-ai: #d63031;
-            --card-size: 70px;
+            --card-size: 70px; /* 預設卡片大小 */
             --gap: 10px;
         }
 
@@ -77,17 +77,18 @@
             font-size: 16px;
             height: 20px;
             color: #666;
-            font-weight: bold;
         }
 
+        /* 遊戲網格區域 */
         .game-board {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
+            grid-template-columns: repeat(8, 1fr); /* 預設 8列 x 5行 = 40張 */
             gap: var(--gap);
             margin: 0 auto;
-            perspective: 1000px;
+            perspective: 1000px; /* 3D翻轉效果 */
         }
 
+        /* 卡片樣式 */
         .card {
             width: var(--card-size);
             height: var(--card-size);
@@ -99,7 +100,11 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .card.flipped { transform: rotateY(180deg); cursor: default; }
+        .card.flipped {
+            transform: rotateY(180deg);
+            cursor: default;
+        }
+
         .card.matched {
             opacity: 0.6;
             cursor: default;
@@ -120,27 +125,34 @@
             -webkit-user-select: none;
         }
 
+        /* 卡片背面 (蓋起來的樣子) */
         .card-front {
             background: var(--card-back);
             background-image: repeating-linear-gradient(
-                45deg, var(--card-back) 0px, var(--card-back) 10px,
-                var(--card-back-pattern) 10px, var(--card-back-pattern) 20px
+                45deg,
+                var(--card-back) 0px,
+                var(--card-back) 10px,
+                var(--card-back-pattern) 10px,
+                var(--card-back-pattern) 20px
             );
             transform: rotateY(0deg);
             border: 2px solid white;
         }
 
+        /* 卡片正面 (翻開後的水果) */
         .card-back {
             background: white;
             transform: rotateY(180deg);
             border: 2px solid #ddd;
         }
 
-        /* Modal 樣式 */
+        /* 結束彈窗 */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0,0,0,0.7);
             display: flex;
             justify-content: center;
@@ -151,7 +163,10 @@
             transition: opacity 0.3s;
         }
 
-        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
         .modal {
             background: white;
@@ -170,7 +185,7 @@
         }
 
         .modal h2 { margin-top: 0; color: #333; }
-        .modal p { font-size: 16px; margin: 20px 0; color: #555; line-height: 1.5;}
+        .modal p { font-size: 18px; margin: 20px 0; }
         
         button {
             background-color: var(--accent-player);
@@ -185,10 +200,12 @@
 
         button:hover { background-color: #0769b3; }
 
+        /* RWD 響應式調整 */
         @media (max-width: 768px) {
             :root { --card-size: 45px; --gap: 6px; }
-            .game-board { grid-template-columns: repeat(5, 1fr); }
+            .game-board { grid-template-columns: repeat(5, 1fr); } /* 5列 x 8行 */
         }
+
         @media (max-width: 400px) {
             :root { --card-size: 38px; --gap: 4px; }
             .scoreboard { font-size: 14px; padding: 10px; }
@@ -214,51 +231,41 @@
         <div class="turn-indicator" id="status-text">準備開始...</div>
     </header>
 
-    <main class="game-board" id="game-board"></main>
+    <main class="game-board" id="game-board">
+        <!-- 卡片將由 JavaScript 生成 -->
+    </main>
 
-    <!-- 開始畫面 -->
-    <div class="modal-overlay show" id="start-modal">
-        <div class="modal">
-            <h2>🧠 水果記憶大對決</h2>
-            <p>
-                <b>規則說明：</b><br>
-                1. 翻開兩張相同的牌得 1 分，並可<b>繼續翻牌</b>。<br>
-                2. 不同的牌則換對方。<br>
-                3. AI 記憶力為 60%，容易忘記位置！
-            </p>
-            <button onclick="startGame()">開始遊戲</button>
-        </div>
-    </div>
-
-    <!-- 結束畫面 -->
+    <!-- 遊戲結束彈窗 -->
     <div class="modal-overlay" id="end-modal">
         <div class="modal">
             <h2 id="winner-title">遊戲結束</h2>
             <p id="winner-message">結果顯示...</p>
-            <button onclick="restartGame()">再玩一次</button>
+            <button onclick="initGame()">再玩一次</button>
         </div>
     </div>
 
     <script>
+        // --- 遊戲設定 ---
         const fruits = [
             '🍎', '🍌', '🍇', '🍉', '🍊', 
             '🍋', '🍍', '🍑', '🍒', '🍓', 
             '🥝', '🍅', '🥥', '🥑', '🍆',
             '🥔', '🥕', '🌽', '🥦', '🍄'
-        ];
+        ]; // 20種水果
 
-        // [設定] AI 記憶力 60% (即 40% 遺忘率)
-        const AI_MEMORY_CHANCE = 0.6; 
-
-        let cardsArray = []; 
+        let cardsArray = []; // 所有卡牌資料
         let hasFlippedCard = false;
-        let lockBoard = false; 
+        let lockBoard = false; // 鎖定面板防止動畫中點擊
         let firstCard, secondCard;
+        
         let playerScore = 0;
         let aiScore = 0;
-        let isPlayerTurn = true; 
+        let isPlayerTurn = true; // true = 玩家, false = AI
         let totalPairs = 20;
         let matchedPairs = 0;
+
+        // AI 記憶庫: key = index, value = fruitType
+        // 當卡片被翻開時，AI會記錄下來
         let aiMemory = new Map(); 
 
         const boardElement = document.getElementById('game-board');
@@ -267,34 +274,39 @@
         const playerBox = document.getElementById('player-box');
         const aiBox = document.getElementById('ai-box');
         const statusText = document.getElementById('status-text');
-        const startModal = document.getElementById('start-modal');
         const endModal = document.getElementById('end-modal');
         const winnerTitle = document.getElementById('winner-title');
         const winnerMessage = document.getElementById('winner-message');
 
-        function startGame() {
-            startModal.classList.remove('show');
-            initGame();
-        }
-
-        function restartGame() {
-            endModal.classList.remove('show');
-            startModal.classList.add('show');
-        }
-
+        // --- 初始化遊戲 ---
         function initGame() {
-            playerScore = 0; aiScore = 0; matchedPairs = 0;
-            isPlayerTurn = true; hasFlippedCard = false; lockBoard = false;
-            firstCard = null; secondCard = null;
+            // 重置變數
+            playerScore = 0;
+            aiScore = 0;
+            matchedPairs = 0;
+            isPlayerTurn = true; // 玩家先手
+            hasFlippedCard = false;
+            lockBoard = false;
+            firstCard = null;
+            secondCard = null;
             aiMemory.clear();
-            updateScoreUI(); updateTurnUI();
+            endModal.classList.remove('show');
+            
+            // 更新 UI
+            updateScoreUI();
+            updateTurnUI();
 
+            // 生成卡牌
+            // 將水果陣列複製一份，變成 40 張
             cardsArray = [...fruits, ...fruits];
+            
+            // 洗牌 (Fisher-Yates 算法)
             for (let i = cardsArray.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [cardsArray[i], cardsArray[j]] = [cardsArray[j], cardsArray[i]];
             }
 
+            // 清空並重建 DOM
             boardElement.innerHTML = '';
             cardsArray.forEach((fruit, index) => {
                 const card = createCardElement(fruit, index);
@@ -302,51 +314,57 @@
             });
         }
 
+        // --- 建立卡片 DOM ---
         function createCardElement(fruit, index) {
             const card = document.createElement('div');
             card.classList.add('card');
             card.dataset.fruit = fruit;
             card.dataset.index = index;
+
             const frontFace = document.createElement('div');
             frontFace.classList.add('card-face', 'card-front');
+            
             const backFace = document.createElement('div');
             backFace.classList.add('card-face', 'card-back');
             backFace.textContent = fruit;
-            card.appendChild(frontFace); card.appendChild(backFace);
+
+            card.appendChild(frontFace);
+            card.appendChild(backFace);
+
             card.addEventListener('click', flipCard);
             return card;
         }
 
+        // --- 翻牌邏輯 (玩家) ---
         function flipCard() {
+            // 如果面板鎖定、正在AI回合、或點擊同一張卡，則忽略
             if (lockBoard) return;
             if (!isPlayerTurn) return;
             if (this === firstCard) return;
 
             this.classList.add('flipped');
+
+            // 記錄到 AI 記憶中 (玩家翻開的，AI也看見了)
             const index = this.dataset.index;
             const fruit = this.dataset.fruit;
-            
-            // AI 試圖記憶
-            tryAiRemember(index, fruit);
+            aiMemory.set(index, fruit);
 
             if (!hasFlippedCard) {
+                // 第一次翻牌
                 hasFlippedCard = true;
                 firstCard = this;
                 return;
             }
+
+            // 第二次翻牌
             secondCard = this;
             checkForMatch();
         }
 
-        function tryAiRemember(index, fruit) {
-            // 只有 60% 機率記住
-            if (Math.random() < AI_MEMORY_CHANCE) {
-                aiMemory.set(index, fruit);
-            }
-        }
-
+        // --- 檢查配對 ---
         function checkForMatch() {
             let isMatch = firstCard.dataset.fruit === secondCard.dataset.fruit;
+
             if (isMatch) {
                 disableCards();
             } else {
@@ -354,10 +372,13 @@
             }
         }
 
+        // --- 配對成功處理 ---
         function disableCards() {
+            // 標記為已配對
             firstCard.classList.add('matched');
             secondCard.classList.add('matched');
             
+            // 計分
             if (isPlayerTurn) {
                 playerScore++;
             } else {
@@ -366,48 +387,54 @@
             matchedPairs++;
             updateScoreUI();
 
-            // 移除記憶中的配對
+            // AI 記憶更新: 配對成功的牌可以從記憶中移除，因為已經沒用了
+            // (這裡不移除也沒關係，但在邏輯上這兩張牌已經是 "已知且已解決")
             aiMemory.delete(firstCard.dataset.index);
             aiMemory.delete(secondCard.dataset.index);
 
             resetBoard();
 
+            // 檢查遊戲是否結束
             if (matchedPairs === totalPairs) {
                 setTimeout(endGame, 500);
             } else {
-                // [連擊邏輯] 配對成功不換人，繼續
-                statusText.textContent = isPlayerTurn ? "配對成功！繼續翻！" : "AI 配對成功！繼續！";
-                statusText.style.color = "#2ecc71";
-
-                // 如果是 AI 配對成功，延遲後繼續 AI 邏輯
+                // 規則：配對成功可以繼續翻 (連擊)，所以回合不切換
+                statusText.textContent = isPlayerTurn ? "配對成功！繼續！" : "AI 配對成功！繼續翻牌！";
+                
+                // 如果是 AI 回合且配對成功，稍後繼續 AI 邏輯
                 if (!isPlayerTurn) {
-                    setTimeout(aiTurn, 1200);
+                    setTimeout(aiTurn, 1000);
                 }
             }
         }
 
+        // --- 配對失敗處理 ---
         function unflipCards() {
-            lockBoard = true;
+            lockBoard = true; // 鎖定面板，防止亂點
+
             setTimeout(() => {
                 firstCard.classList.remove('flipped');
                 secondCard.classList.remove('flipped');
                 
-                // 配對失敗，換人
+                // 切換回合
                 isPlayerTurn = !isPlayerTurn;
                 updateTurnUI();
                 resetBoard();
 
+                // 如果換到 AI 回合
                 if (!isPlayerTurn) {
                     setTimeout(aiTurn, 1000);
                 }
             }, 1000);
         }
 
+        // --- 重置暫存變數 ---
         function resetBoard() {
             [hasFlippedCard, lockBoard] = [false, false];
             [firstCard, secondCard] = [null, null];
         }
 
+        // --- UI 更新 ---
         function updateScoreUI() {
             playerScoreEl.textContent = playerScore;
             aiScoreEl.textContent = aiScore;
@@ -427,6 +454,7 @@
             }
         }
 
+        // --- 遊戲結束 ---
         function endGame() {
             endModal.classList.add('show');
             if (playerScore > aiScore) {
@@ -444,29 +472,33 @@
             }
         }
 
-        // --- AI 邏輯 ---
+        // --- AI 邏輯核心 ---
         function aiTurn() {
             if (isPlayerTurn || matchedPairs === totalPairs) return;
 
+            // 1. 準備第一張牌的選擇
             let card1Index = pickFirstCard();
             flipCardByIndex(card1Index);
 
+            // 2. 準備第二張牌的選擇 (需等第一張翻開後)
             setTimeout(() => {
-                if (isPlayerTurn) return; 
+                // 基於第一張牌的內容決定第二張
                 let card1Fruit = cardsArray[card1Index];
                 let card2Index = pickSecondCard(card1Index, card1Fruit);
-                if (card2Index === -1) {
-                    card2Index = getRandomUnknownCard(card1Index);
-                }
                 flipCardByIndex(card2Index);
             }, 800);
         }
 
+        // 輔助：依據 Index 翻牌
         function flipCardByIndex(index) {
             const card = boardElement.children[index];
-            if (!card || card.classList.contains('matched')) return;
+            // 如果卡片已經被配對(matched)，理論上不會被選到，但加個保險
+            if (card.classList.contains('matched')) return;
 
-            tryAiRemember(index, cardsArray[index]);
+            // AI 記憶錄入
+            aiMemory.set(index, cardsArray[index]);
+
+            // 觸發翻牌動畫與邏輯
             card.classList.add('flipped');
 
             if (!firstCard) {
@@ -477,43 +509,66 @@
             }
         }
 
+        // AI 策略 1: 決定第一張翻什麼
         function pickFirstCard() {
+            // 1. 檢查記憶中是否有成對的牌
             let pairIndex = findKnownPair();
-            if (pairIndex !== -1) return pairIndex;
+            if (pairIndex !== -1) {
+                return pairIndex; // 直接拿這一張
+            }
 
+            // 2. 沒有成對，檢查記憶中是否有單張已知的牌 (嘗試去湊對)
             let knownSingle = findKnownSingle();
-            if (knownSingle !== -1) return knownSingle;
+            if (knownSingle !== -1) {
+                return knownSingle;
+            }
 
+            // 3. 完全沒記憶，隨機選一張沒翻開的
             return getRandomUnknownCard();
         }
 
+        // AI 策略 2: 決定第二張翻什麼
         function pickSecondCard(firstIndex, firstFruit) {
+            // 1. 如果知道這張牌的另一半在哪，直接翻
+            // 遍歷 AI 記憶
             for (let [idx, fruit] of aiMemory) {
-                let cardEl = boardElement.children[idx];
-                if (idx !== firstIndex && 
-                    fruit === firstFruit && 
-                    !cardEl.classList.contains('matched')) {
-                    return idx; 
+                if (idx !== firstIndex && fruit === firstFruit) {
+                    return idx; // 找到配對了！
                 }
             }
+
+            // 2. 不知道另一半在哪，隨機選一張沒翻開且不是第一張的牌
             return getRandomUnknownCard(firstIndex);
         }
 
+        // --- AI 輔助函數 ---
+
         function findKnownPair() {
+            // 檢查記憶庫，看是否有兩張一樣的水果
+            // 用一個 Map 統計記憶中的水果數量
             let counts = {};
             for (let [idx, fruit] of aiMemory) {
+                // 還要確認這張牌在板上還沒被 matched (雖然 matched 的會從 aiMemory 移除，但雙重保險)
                 let cardEl = boardElement.children[idx];
                 if (cardEl.classList.contains('matched')) continue;
-                if (counts[fruit]) return counts[fruit];
-                else counts[fruit] = idx;
+
+                if (counts[fruit]) {
+                    // 發現第二張一樣的！
+                    // counts[fruit] 記錄的是第一次看到的 index
+                    return counts[fruit];
+                } else {
+                    counts[fruit] = idx;
+                }
             }
             return -1;
         }
 
         function findKnownSingle() {
+            // 找一張 AI 記得但還沒找到配對的牌
             for (let [idx, fruit] of aiMemory) {
                 let cardEl = boardElement.children[idx];
                 if (!cardEl.classList.contains('flipped') && !cardEl.classList.contains('matched')) {
+                    // 簡單的 AI 策略：如果記得一張，就去翻它嘗試運氣
                     return idx;
                 }
             }
@@ -524,15 +579,21 @@
             let availableIndices = [];
             for (let i = 0; i < cardsArray.length; i++) {
                 let cardEl = boardElement.children[i];
+                // 條件：沒被翻開，沒被配對，不是排除的那張
                 if (!cardEl.classList.contains('flipped') && 
                     !cardEl.classList.contains('matched') && 
                     i !== excludeIndex) {
                     availableIndices.push(i);
                 }
             }
-            if (availableIndices.length === 0) return -1;
+            // 隨機回傳
+            if (availableIndices.length === 0) return -1; // 理論上不會發生
             return availableIndices[Math.floor(Math.random() * availableIndices.length)];
         }
+
+        // 啟動遊戲
+        initGame();
+
     </script>
 </body>
 </html>
