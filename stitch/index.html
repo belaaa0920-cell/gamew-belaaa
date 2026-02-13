@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BELAAA's Game Center Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#649be2",
+                        "secondary": "#ee8181",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#121820",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem", 
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gradient-to-b from-[#649be2]/30 via-[#f0f8ff] to-[#ee8181]/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-display selection:bg-primary selection:text-white overflow-x-hidden">
+<div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+<span class="material-symbols-outlined absolute top-[10%] left-[5%] text-primary/20 text-4xl animate-float">star</span>
+<span class="material-symbols-outlined absolute top-[15%] right-[10%] text-secondary/20 text-3xl animate-float-delayed">auto_awesome</span>
+<span class="material-symbols-outlined absolute bottom-[20%] left-[8%] text-primary/20 text-5xl animate-float-delayed" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined absolute bottom-[40%] right-[5%] text-secondary/20 text-4xl animate-float">spark</span>
+<span class="material-symbols-outlined absolute top-[40%] left-[15%] text-primary/10 text-2xl">brightness_1</span>
+<span class="material-symbols-outlined absolute bottom-[10%] right-[20%] text-secondary/10 text-2xl">brightness_1</span>
+<div class="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 rounded-full blur-[100px]"></div>
+</div>
+<header class="flex items-center justify-between px-6 py-4 relative z-10">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white shadow-md shadow-blue-200">
+<span class="material-symbols-outlined">sports_esports</span>
+</div>
+<span class="font-extrabold text-xl tracking-tight text-primary">BELAAA</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 rounded-full bg-white/80 dark:bg-slate-800 backdrop-blur-sm shadow-sm flex items-center justify-center text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-secondary/20 overflow-hidden border-2 border-white dark:border-slate-700 shadow-md relative">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="User profile avatar of a smiling person" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8QrNe4p26kySVXzIMnHN8SMKu8bIwlb2YwFQLNJ46_tKVuhRCmZZ1PqbLCXLmseD-ctE2rOefqYhufOeMRWy2hXrQx5VrAUamxXDA8C8MfGd-WwxVTxBafcz5PAqplQNPSa105KzECJe7MY6PJu0DvwogcquzBAjgNQ7sWgekqllMqovaEK1HLakaBd3RzONXo7InmNxiyCxTl1WtJWREJUG9UKV8FczMAECjIkYLwEqevYZbiQzEeVtauofTtJRB6YR2AspRZ0Q"/>
+</div>
+</div>
+</header>
+<main class="flex-grow px-4 pb-8 overflow-y-auto no-scrollbar relative z-0">
+<div class="mt-4 mb-8 text-center relative">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-64 h-64 bg-secondary/10 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
+<h1 class="text-5xl md:text-6xl font-black tracking-tight leading-none mb-2 drop-shadow-sm">
+<span class="text-primary block mb-1 drop-shadow-sm">let's have</span>
+<span class="text-secondary inline-block transform hover:scale-110 transition-transform cursor-default underline decoration-wavy decoration-4 underline-offset-4 drop-shadow-md">fun !!</span>
+</h1>
+<p class="mt-4 text-slate-600 dark:text-slate-300 font-bold bg-white/60 dark:bg-black/20 inline-block px-5 py-2 rounded-full backdrop-blur-md shadow-sm border border-white/50">
+<span class="mr-1">✨</span> Choose your challenge <span class="ml-1">✨</span>
+</p>
+</div>
+<div class="flex flex-col gap-10 max-w-md mx-auto pb-10 relative">
+<div class="relative group/wrapper">
+<span class="material-symbols-outlined absolute -top-8 -right-4 text-[#ee8181]/40 text-5xl rotate-12 z-0 animate-float" style="font-variation-settings: 'FILL' 1;">nutrition</span>
+<span class="material-symbols-outlined absolute top-20 -left-6 text-[#ee8181]/30 text-4xl -rotate-12 z-0 animate-float-delayed">eco</span>
+<span class="material-symbols-outlined absolute -bottom-4 right-0 text-[#ee8181]/30 text-4xl rotate-45 z-0">circle</span>
+<span class="material-symbols-outlined absolute bottom-20 -right-8 text-[#ee8181]/20 text-6xl -rotate-6 z-0" style="font-variation-settings: 'FILL' 1;">water_drop</span> 
+<article class="relative z-10 bg-white dark:bg-slate-800 rounded-[2rem] shadow-xl shadow-red-100/80 dark:shadow-none border-[3px] border-[#ee8181]/40 overflow-hidden hover:border-[#ee8181] hover:shadow-2xl hover:shadow-red-200 transition-all duration-300 transform hover:-translate-y-1">
+<div class="h-52 w-full bg-[#ee8181]/20 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-[#ee8181]/40 to-transparent z-10"></div>
+<div class="absolute -top-10 -right-10 w-40 h-40 bg-[#ee8181] rounded-full blur-3xl opacity-40"></div>
+<div class="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white dark:from-slate-800 to-transparent z-20"></div>
+<img alt="Fruit Memory Game Art" class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-110 transition-transform duration-700" data-alt="Colorful assorted fresh fruits background pattern" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdZG_mJuV4TLjq7cW5pfh615R6yn4GUcCIVP8n0DUw5MEjttwn-WHMooCje3MhcqbS3wWP1wbO0G5XIORxnylD1h6eCmAkm162kQMUiyuw_0X53kKlISiv85Kr6co9cWAbtfU8n-r-H7dn2FlNXIGfAPHRZcXrCuqmIMK6hJOKukJrSDa3jGN0gQj52hQbHWHrEbFYBqLe8l-bRQ0tkJFjrj3ttUQHoALBaLA8G7pZGtmyJJ0IQKRECS9xc1EWdRH23FEW1iNyITg"/>
+<div class="absolute top-4 left-4 z-30">
+<span class="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#ee8181] text-white text-xs font-bold shadow-lg shadow-red-300 border border-red-300/50">
+<span class="material-symbols-outlined text-[16px]">psychology</span>
+                                Brain Teaser
+                            </span>
+</div>
+</div>
+<div class="p-6 pt-0 relative z-30">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h2 class="text-2xl font-black text-slate-900 dark:text-white group-hover:text-[#ee8181] transition-colors">Fruit Memory</h2>
+<p class="text-sm font-semibold text-[#ee8181]/90 mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">local_fire_department</span>
+                                    Fruit Memory Showdown
+                                </p>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-[#ee8181] text-white flex items-center justify-center shadow-lg shadow-red-200 rotate-3 group-hover:rotate-12 transition-transform duration-300">
+<span class="material-symbols-outlined text-2xl">nutrition</span>
+</div>
+</div>
+<div class="mt-6 flex items-center justify-between">
+<div class="flex -space-x-3">
+<div class="w-9 h-9 rounded-full border-2 border-white dark:border-slate-800 bg-gray-200 overflow-hidden ring-2 ring-red-100">
+<img class="w-full h-full object-cover" data-alt="Avatar of player 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdQnnV1FRWI0d3vafgsLAntQI2PplCZS7eUWeVA8vpexuit_Zn9NTr-z3bcTNdrS1H8CvkiIC8UXSeSFy3L1xLcLdEnB4mXUOD5KtztKrGqLtvVrdmgdl8cNwKmZ8fgW1TmoR74eQPm7IROYjqT4VxgVsp0RfWcpAv5bNx_IRPRBlwvQzZotnlOxX-MY-6_z5WUYvKPOeT-7Cwdn34CPsIL8QWE3GiT9m_nAC3yWJ-KfXS7rvOhfAPX6uQX8t9rdeF0rOuh2zw34s"/>
+</div>
+<div class="w-9 h-9 rounded-full border-2 border-white dark:border-slate-800 bg-gray-200 overflow-hidden ring-2 ring-red-100">
+<img class="w-full h-full object-cover" data-alt="Avatar of player 2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZ9BGJLF-IeuJYYjsc7CNJjVJhF3b3WOS5FCjIRAFKQmrxIasdz0glEbhKVQ13zu0FMBgbem4cfhqp6acz331siQG8x-umVRkdUy_L6PXuIJx5OsSwkrw89FseyOHnOysBAAfBTUt_9LPeCcC6c-d9rKW7vbwSOimFm_6n4qmmanpRbKqBJs20mAiSwRCBsUOn_HT6vuaRpRzaZWEA-zU2cJ2DEfDnWpFEpx5Ku638Zz3jRCp49rXNPiHJXaz0TcN9pSQ4Un6IpE4"/>
+</div>
+<div class="w-9 h-9 rounded-full border-2 border-white dark:border-slate-800 bg-[#ee8181] flex items-center justify-center text-[10px] font-bold text-white ring-2 ring-red-100">
+                                    +2k
+                                </div>
+</div>
+<a href="../memories cards.html" class="bg-[#ee8181] hover:bg-[#e06565] text-white px-7 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-red-200 hover:shadow-red-300 active:scale-95 flex items-center gap-2 no-underline">
+                                Start
+                                <span class="material-symbols-outlined text-lg">play_circle</span>
+</a>
+</div>
+</div>
+</article>
+</div>
+<div class="relative group/wrapper">
+<span class="material-symbols-outlined absolute -top-6 left-0 text-[#649be2]/40 text-5xl -rotate-12 z-0 animate-float-delayed">gesture</span>
+<span class="material-symbols-outlined absolute bottom-20 -right-6 text-[#649be2]/30 text-5xl rotate-12 z-0 animate-float">waves</span>
+<span class="material-symbols-outlined absolute top-10 -right-5 text-[#649be2]/20 text-4xl rotate-45 z-0">all_inclusive</span>
+<div class="absolute -bottom-4 -left-4 w-24 h-24 border-4 border-dashed border-[#649be2]/20 rounded-full z-0 animate-spin-slow" style="animation-duration: 20s;"></div>
+<article class="relative z-10 bg-white dark:bg-slate-800 rounded-[2rem] shadow-xl shadow-blue-100/80 dark:shadow-none border-[3px] border-[#649be2]/40 overflow-hidden hover:border-[#649be2] hover:shadow-2xl hover:shadow-blue-200 transition-all duration-300 transform hover:-translate-y-1">
+<div class="h-52 w-full bg-[#649be2]/20 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-[#649be2]/40 to-transparent z-10"></div>
+<div class="absolute -bottom-10 -left-10 w-40 h-40 bg-[#649be2] rounded-full blur-3xl opacity-40"></div>
+<div class="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white dark:from-slate-800 to-transparent z-20"></div>
+<img alt="Snake Game Art" class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-110 transition-transform duration-700" data-alt="Abstract green digital snake pattern background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIK6SJWV56BFQhyjM2KD-yGPdfRTlzV_9IV_pLHrjVvNMF-OH7nJkj742JPWOuMUttWHOD2mYctHgMJculLKF2jGHn29uruckBA7wJr7N7RIneemNTkPJhtDubwIZVN1VPjSxDp1fj29_oqya7HNK7DHCyTUN7p5jgEaGT_jpyVpE-WNiVOI6rQELoE3QdvFIVoQ4AZD5ibrmpM6J3XiNY_W92t7jjFlhZs_t3VkVCZOMC02fKJAC5EVBmYN1GGMijDDSCeSpMj_M"/>
+<div class="absolute top-4 left-4 z-30">
+<span class="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#649be2] text-white text-xs font-bold shadow-lg shadow-blue-300 border border-blue-300/50">
+<span class="material-symbols-outlined text-[16px]">trophy</span>
+                                Ranked
+                            </span>
+</div>
+</div>
+<div class="p-6 pt-0 relative z-30">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h2 class="text-2xl font-black text-slate-900 dark:text-white group-hover:text-[#649be2] transition-colors">Snake Game</h2>
+<p class="text-sm font-semibold text-[#649be2]/90 mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">timeline</span>
+                                    Challenge for high scores
+                                </p>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-[#649be2] text-white flex items-center justify-center shadow-lg shadow-blue-200 -rotate-3 group-hover:-rotate-12 transition-transform duration-300">
+<span class="material-symbols-outlined text-2xl">gesture</span>
+</div>
+</div>
+<div class="mt-6 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">High Score</span>
+<span class="text-xl font-black text-slate-900 dark:text-white font-display">14,250</span>
+</div>
+<a href="../snack.html" class="bg-[#649be2] hover:bg-[#538bd6] text-white px-7 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 active:scale-95 flex items-center gap-2 no-underline">
+                                Start
+                                <span class="material-symbols-outlined text-lg">play_circle</span>
+</a>
+</div>
+</div>
+</article>
+</div>
+<div class="p-8 rounded-[2rem] border-4 border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center text-center gap-3 bg-white/40 backdrop-blur-sm hover:bg-white/60 transition-colors cursor-default relative overflow-hidden">
+<div class="absolute inset-0 opacity-10 bg-[radial-gradient(#649be2_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 relative z-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">add</span>
+</div>
+<p class="text-sm font-bold text-slate-500 relative z-10">More games coming soon!</p>
+</div>
+</div>
+</main>
+<footer class="py-6 text-center border-t border-slate-200/50 dark:border-slate-800 bg-white/60 dark:bg-slate-900/80 backdrop-blur-md relative z-20">
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white mb-1 shadow-sm">
+<span class="material-symbols-outlined text-lg">videogame_asset</span>
+</div>
+<p class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary font-black text-sm tracking-wide">BELAAA</p>
+<p class="text-slate-400 text-[10px] font-medium">© 2023 BELAAA. All rights reserved.</p>
+</div>
+</footer>
+
+</body></html>
