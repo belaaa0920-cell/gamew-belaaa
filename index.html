@@ -84,6 +84,9 @@
 <span class="font-extrabold text-xl tracking-tight text-primary">BELAAA</span>
 </div>
 <div class="flex items-center gap-3">
+<button id="theme-toggle" class="w-10 h-10 rounded-full bg-white/80 dark:bg-slate-800 backdrop-blur-sm shadow-sm flex items-center justify-center text-slate-500 hover:text-primary transition-colors" title="Toggle dark/light mode">
+<span class="material-symbols-outlined" id="theme-icon">dark_mode</span>
+</button>
 <button class="w-10 h-10 rounded-full bg-white/80 dark:bg-slate-800 backdrop-blur-sm shadow-sm flex items-center justify-center text-slate-500 hover:text-primary transition-colors">
 <span class="material-symbols-outlined">notifications</span>
 </button>
@@ -148,7 +151,7 @@
                                     +2k
                                 </div>
 </div>
-<a href="../memories cards.html" class="bg-[#ee8181] hover:bg-[#e06565] text-white px-7 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-red-200 hover:shadow-red-300 active:scale-95 flex items-center gap-2 no-underline">
+<a href="memories cards.html" class="bg-[#ee8181] hover:bg-[#e06565] text-white px-7 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-red-200 hover:shadow-red-300 active:scale-95 flex items-center gap-2 no-underline">
                                 Start
                                 <span class="material-symbols-outlined text-lg">play_circle</span>
 </a>
@@ -192,7 +195,7 @@
 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">High Score</span>
 <span class="text-xl font-black text-slate-900 dark:text-white font-display">14,250</span>
 </div>
-<a href="../snack.html" class="bg-[#649be2] hover:bg-[#538bd6] text-white px-7 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 active:scale-95 flex items-center gap-2 no-underline">
+<a href="snack.html" class="bg-[#649be2] hover:bg-[#538bd6] text-white px-7 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-blue-200 hover:shadow-blue-300 active:scale-95 flex items-center gap-2 no-underline">
                                 Start
                                 <span class="material-symbols-outlined text-lg">play_circle</span>
 </a>
@@ -218,5 +221,28 @@
 <p class="text-slate-400 text-[10px] font-medium">© 2023 BELAAA. All rights reserved.</p>
 </div>
 </footer>
+
+<script>
+// Theme toggle functionality
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const htmlElement = document.documentElement;
+
+// Check for saved theme preference or default to light
+const currentTheme = localStorage.getItem('theme') || 'light';
+htmlElement.classList.toggle('dark', currentTheme === 'dark');
+updateThemeIcon(currentTheme);
+
+themeToggle.addEventListener('click', () => {
+    const isDark = htmlElement.classList.toggle('dark');
+    const newTheme = isDark ? 'dark' : 'light';
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+});
+
+function updateThemeIcon(theme) {
+    themeIcon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
+}
+</script>
 
 </body></html>
