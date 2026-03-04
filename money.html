@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>理財小助手 Ultimate</title>
+    <style>
+        /* --- CSS 變數與主題系統 --- */
+        :root {
+            /* 預設深色奢華風 */
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(30, 41, 59, 0.75);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-gold: #fbbf24;
+            --accent-green: #34d399;
+            --accent-red: #f87171;
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --btn-text: #0f172a;
+            --shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* 淺色模式 */
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(0, 0, 0, 0.05);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent-gold: #d97706;
+            --input-bg: rgba(255, 255, 255, 0.6);
+            --btn-text: #ffffff;
+            --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 程式終端風格 */
+        [data-theme="code"] {
+            --bg-gradient: #0d1117;
+            --card-bg: #161b22;
+            --card-border: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent-gold: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-red: #f85149;
+            --input-bg: #0d1117;
+            --btn-text: #ffffff;
+            --font-family: 'Courier New', Courier, monospace;
+            --radius: 4px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        /* 背景裝飾 */
+        .bg-deco {
+            position: fixed; width: 400px; height: 400px; border-radius: 50%;
+            filter: blur(100px); z-index: -1; opacity: 0.3; pointer-events: none; transition: var(--transition);
+        }
+        .deco-1 { background: var(--accent-gold); top: -100px; left: -100px; }
+        .deco-2 { background: var(--accent-green); bottom: -100px; right: -100px; }
+        [data-theme="code"] .bg-deco { display: none; }
+
+        /* 主容器 */
+        .app-container {
+            width: 100%; max-width: 420px; height: 90vh;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex; flex-direction: column;
+            position: relative; overflow: hidden;
+            transition: var(--transition);
+        }
+
+        /* 頂部 Header */
+        header {
+            padding: 20px 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            background: rgba(0,0,0,0.05);
+            flex-shrink: 0; z-index: 10;
+        }
+
+        h1 { 
+            font-size: 1.2rem; font-weight: 700; 
+            display: flex; align-items: center; gap: 8px; 
+            cursor: pointer; user-select: none;
+        }
+        [data-theme="code"] h1 { color: var(--accent-gold); text-decoration: underline; cursor: pointer; }
+
+        .header-actions { display: flex; gap: 10px; }
+        .icon-btn {
+            background: none; border: 1px solid var(--card-border);
+            color: var(--text-main); width: 36px; height: 36px;
+            border-radius: 10px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; transition: 0.2s;
+        }
+        .icon-btn:hover { background: var(--card-border); transform: translateY(-2px); }
+        [data-theme="code"] .icon-btn { border: 1px dashed var(--text-muted); color: var(--accent-gold); }
+
+        /* 頁面切換容器 */
+        main {
+            flex: 1; overflow-y: auto; overflow-x: hidden;
+            padding: 20px 25px; position: relative;
+            scroll-behavior: smooth;
+        }
+        main::-webkit-scrollbar { width: 4px; }
+        main::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+        .page { display: none; animation: fadeIn 0.4s ease forwards; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 設定頁樣式 */
+        .setting-section { margin-bottom: 30px; }
+        .section-title { 
+            font-size: 0.9rem; color: var(--text-muted); font-weight: 600; 
+            margin-bottom: 12px; display: block; letter-spacing: 0.5px; 
+        }
+        
+        .setting-card {
+            background: var(--input-bg); padding: 20px; border-radius: 12px;
+            border: 1px solid var(--card-border); margin-bottom: 15px;
+        }
+        
+        .budget-control { display: flex; gap: 10px; align-items: center; }
+        .budget-input {
+            flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--card-border);
+            color: var(--text-main); padding: 10px; border-radius: 8px; text-align: right;
+            font-size: 1rem; outline: none;
+        }
+        .budget-input:focus { border-color: var(--accent-gold); }
+
+        .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .theme-card {
+            background: var(--input-bg); border: 2px solid transparent;
+            border-radius: 12px; padding: 12px 5px;
+            text-align: center; cursor: pointer;
+            transition: 0.2s; position: relative;
+        }
+        .theme-card.selected { border-color: var(--accent-gold); background: rgba(255,255,255,0.05); transform: translateY(-3px); }
+        .theme-icon { font-size: 1.8rem; display: block; margin-bottom: 5px; }
+        .theme-name { font-size: 0.75rem; color: var(--text-muted); }
+
+        .voice-selector { display: flex; flex-direction: column; gap: 8px; }
+        .voice-option {
+            padding: 15px; background: var(--input-bg); border-radius: 12px;
+            cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+            border: 1px solid transparent; transition: 0.2s;
+        }
+        .voice-option.selected { border-color: var(--accent-gold); background: rgba(255,255,255,0.05); }
+        .voice-option:hover { background: rgba(255,255,255,0.08); }
+
+        /* 返回按鈕 */
+        .back-btn {
+            background: var(--card-border); color: var(--text-main);
+            border: none; padding: 12px 25px; border-radius: 50px;
+            cursor: pointer; font-weight: 600; margin-top: 10px;
+            display: flex; align-items: center; gap: 8px; width: 100%;
+            justify-content: center; transition: 0.2s;
+        }
+        .back-btn:hover { background: var(--accent-gold); color: #000; }
+
+        /* 儀表板樣式 */
+        .balance-card { text-align: center; margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid var(--card-border); }
+        .balance-label { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .balance-val { font-size: 2.5rem; font-weight: 800; color: var(--accent-gold); font-family: monospace; letter-spacing: -1px; }
+        [data-theme="code"] .balance-val { color: var(--accent-green); text-shadow: 0 0 10px rgba(63, 185, 80, 0.3); }
+
+        /* AI 建議區 */
+        .ai-tip-box {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), transparent);
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px; border-radius: 0 12px 12px 0;
+            margin-bottom: 25px; font-size: 0.9rem; line-height: 1.5;
+            display: flex; gap: 10px; align-items: flex-start;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .ai-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+        /* 類別選擇網格 (Modal內) */
+        .category-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+            max-height: 150px; overflow-y: auto; padding: 5px;
+        }
+        .cat-item {
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            cursor: pointer; opacity: 0.7; transition: 0.2s;
+        }
+        .cat-item:hover { opacity: 1; transform: scale(1.05); }
+        .cat-item.selected { opacity: 1; }
+        .cat-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            background: var(--input-bg); display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; border: 2px solid transparent; transition: 0.2s;
+        }
+        .cat-item.selected .cat-icon { 
+            border-color: var(--accent-gold); 
+            background: rgba(251, 191, 36, 0.15); 
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+        }
+        .cat-name { font-size: 0.7rem; text-align: center; color: var(--text-muted); }
+
+        /* 記錄列表 */
+        .record-list { display: flex; flex-direction: column; gap: 10px; padding-bottom: 100px; }
+        .record-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; background: var(--input-bg);
+            border-radius: 12px; font-size: 0.9rem;
+            transition: 0.2s; border: 1px solid transparent;
+        }
+        .record-item:hover { background: rgba(255,255,255,0.05); border-color: var(--card-border); }
+        .record-left { display: flex; align-items: center; gap: 12px; }
+        .r-icon { 
+            width: 36px; height: 36px; border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 1.1rem; background: rgba(255,255,255,0.1);
+        }
+
+        /* 刪除按鈕樣式 */
+        .delete-btn {
+            opacity: 0.4;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 5px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            margin-left: 8px;
+        }
+        .record-item:hover .delete-btn, 
+        .delete-btn:hover {
+            opacity: 1;
+            color: var(--accent-red);
+            background: rgba(248, 113, 113, 0.1);
+        }
+
+        /* 底部操作區 */
+        .bottom-action {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 15px 25px; background: var(--card-bg);
+            border-top: 1px solid var(--card-border);
+            display: flex; gap: 10px; align-items: center;
+            z-index: 20; backdrop-filter: blur(10px);
+        }
+        .nav-circle {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--input-bg); border: 1px solid var(--card-border);
+            color: var(--text-main); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 1.1rem; transition: 0.2s; flex-shrink: 0;
+        }
+        .nav-circle:active { background: var(--card-border); transform: scale(0.95); }
+        .date-display { flex: 1; text-align: center; font-weight: 600; font-size: 1rem; }
+        .fab-add {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: var(--accent-gold); color: #000;
+            border: none; font-size: 1.8rem; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; flex-shrink: 0;
+        }
+        .fab-add:active { transform: scale(0.9) rotate(90deg); }
+
+        /* Modal 通用 */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            z-index: 100; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-content {
+            background: var(--card-bg); width: 90%; max-width: 360px;
+            border-radius: var(--radius); padding: 25px;
+            border: 1px solid var(--card-border);
+            transform: scale(0.9); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .modal-overlay.open .modal-content { transform: scale(1); }
+
+        /* 輸入框與按鈕 */
+        .input-box {
+            width: 100%; background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            padding: 15px; border-radius: 12px;
+            color: var(--text-main); font-size: 1.1rem;
+            outline: none; transition: 0.3s; text-align: center;
+        }
+        .input-box:focus { border-color: var(--accent-gold); box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1); }
+        [data-theme="code"] .input-box { font-family: monospace; border: 1px solid var(--text-muted); }
+
+        .btn {
+            width: 100%; padding: 12px; border-radius: 12px; border: none;
+            font-weight: 700; cursor: pointer; font-size: 0.95rem;
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--accent-gold); color: var(--btn-text); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .btn-danger { background: var(--accent-red); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--card-border); color: var(--text-main); }
+        .btn-sm { padding: 8px 12px; font-size: 0.85rem; }
+
+        /* 類型切換 Toggle */
+        .type-toggle {
+            display: flex; background: var(--input-bg); border-radius: 12px; padding: 4px; margin-bottom: 20px;
+        }
+        .type-btn {
+            flex: 1; padding: 10px; text-align: center; border-radius: 10px; cursor: pointer;
+            font-weight: 600; color: var(--text-muted); transition: 0.3s;
+        }
+        .type-btn.active { background: var(--card-bg); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .type-btn.active.expense { color: var(--accent-red); }
+        .type-btn.active.income { color: var(--accent-green); }
+
+        .hidden { display: none !important; }
+        .text-green { color: var(--accent-green); }
+        .text-red { color: var(--accent-red); }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-deco deco-1"></div>
+    <div class="bg-deco deco-2"></div>
+
+    <div class="app-container">
+        <header>
+            <h1 onclick="App.goHome()" title="返回首頁">💰 理財小助手</h1>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="App.goToSettings()" title="設定">⚙️</button>
+                <button class="icon-btn" onclick="App.openStats()" title="統計">📊</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- 1. 設定頁面 -->
+            <div id="page-settings" class="page">
+                <h2 style="margin-bottom:25px;">設定控制台</h2>
+                
+                <!-- 預算設定區 -->
+                <div class="setting-section">
+                    <span class="section-title">💰 預算管理</span>
+                    <div class="setting-card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:0.9rem; color:var(--text-muted);">
+                            <span>當前月預算</span>
+                            <span id="current-budget-display">$0</span>
+                        </div>
+                        <div class="budget-control">
+                            <input type="number" id="new-budget-input" class="budget-input" placeholder="新金額">
+                            <button class="btn btn-primary btn-sm" onclick="App.updateBudget()">更新</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 主題設定區 -->
+                <div class="setting-section">
+                    <span class="section-title">🎨 介面主題</span>
+                    <div class="theme-grid">
+                        <div class="theme-card selected" onclick="App.setTheme('dark', this)">
+                            <span class="theme-icon">🌙</span>
+                            <span class="theme-name">深色奢華</span>
+                        </div>
+                        <div class="theme-card" onclick="App.setTheme('light', this)">
+                            <span class="theme-icon">☀️</span>
+                            <span class="theme-name">清爽明亮</span>
+                        </div>
+                        <div class="theme-card" onclick="App.setTheme('code', this)">
+                            <span class="theme-icon">💻</span>
+                            <span class="theme-name">程式終端</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 語氣設定區 -->
+                <div class="setting-section">
+                    <span class="section-title">🗣️ 助手語氣</span>
+                    <div class="voice-selector">
+                        <div class="voice-option selected" onclick="App.setVoice('normal', this)">
+                            <span>🤵 嚴肅管家</span>
+                            <span>✓</span>
+                        </div>
+                        <div class="voice-option" onclick="App.setVoice('cute', this)">
+                            <span>👩‍🎓 可愛學姐</span>
+                            <span></span>
+                        </div>
+                        <div class="voice-option" onclick="App.setVoice('boss', this)">
+                            <span>👔 霸道總裁</span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 危險操作區 -->
+                <div class="setting-section" style="margin-top: 40px; border-top: 1px solid var(--card-border); padding-top: 20px;">
+                    <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">危險操作區</p>
+                    <button class="btn btn-danger" onclick="App.openResetModal()">⚠️ 重置所有資料</button>
+                </div>
+
+                <button class="back-btn" onclick="App.goHome()">← 返回主頁</button>
+            </div>
+
+            <!-- 2. 儀表板頁面 -->
+            <div id="page-dashboard" class="page active">
+                <div class="balance-card">
+                    <div class="balance-label">目前資產總額</div>
+                    <div class="balance-val" id="display-balance">$0</div>
+                </div>
+
+                <div class="ai-tip-box">
+                    <span class="ai-icon">💬</span>
+                    <span id="ai-tip">載入中...</span>
+                </div>
+
+                <div class="record-list" id="record-list">
+                    <!-- JS 生成列表 -->
+                </div>
+                
+                <div style="height: 100px;"></div>
+            </div>
+
+            <!-- 3. 初始設定頁面 -->
+            <div id="page-setup" class="page" style="text-align:center; padding-top:40px;">
+                <h1 style="justify-content:center; margin-bottom:20px; font-size:2rem;">🐷</h1>
+                <h2 style="margin-bottom:10px;">歡迎使用</h2>
+                <p style="color:var(--text-muted); margin-bottom:30px;">設定本月預算，開始你的財富自由之路</p>
+                <input type="number" id="init-allowance" class="input-box" placeholder="輸入預算金額" style="margin-bottom:20px;">
+                <button class="btn btn-primary" onclick="App.initBudget()">開始旅程</button>
+            </div>
+        </main>
+
+        <!-- 底部操作欄 (僅 Dashboard 顯示) -->
+        <div class="bottom-action hidden" id="bottom-bar">
+            <div class="nav-circle" onclick="App.changeDate(-1)">❮</div>
+            <div class="date-display" id="current-date">今天</div>
+            <div class="nav-circle" onclick="App.changeDate(1)">❯</div>
+            <button class="fab-add" onclick="App.openAddModal()">+</button>
+        </div>
+    </div>
+
+    <!-- 新增記錄 Modal -->
+    <div class="modal-overlay" id="add-modal">
+        <div class="modal-content">
+            <h3 style="text-align:center; margin-bottom:15px;">記一筆</h3>
+            
+            <div class="type-toggle">
+                <div class="type-btn active expense" id="type-expense" onclick="App.switchType('expense')">支出</div>
+                <div class="type-btn" id="type-income" onclick="App.switchType('income')">收入</div>
+            </div>
+
+            <input type="number" id="add-amount" class="input-box" placeholder="金額" style="margin-bottom:20px;">
+            
+            <div style="max-height:180px; overflow-y:auto; margin-bottom:20px;">
+                <div class="category-grid" id="category-selector"></div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-outline" onclick="App.closeModal('add-modal')">取消</button>
+                <button class="btn btn-primary" onclick="App.confirmAdd()">確認</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計 Modal -->
+    <div class="modal-overlay" id="stats-modal">
+        <div class="modal-content">
+            <h3 style="text-align:center; color:var(--accent-gold); margin-bottom:20px;">📊 月度財報</h3>
+            <div class="record-item"><span>初始預算</span><span id="stat-allowance">$0</span></div>
+            <div class="record-item"><span>總收入</span><span class="text-green" id="stat-income">+$0</span></div>
+            <div class="record-item"><span>總支出</span><span class="text-red" id="stat-expense">-$0</span></div>
+            <div style="border-top:1px solid var(--card-border); margin:10px 0;"></div>
+            <div class="record-item"><span>目前結餘</span><span id="stat-balance">$0</span></div>
+            <button class="btn btn-outline" style="margin-top:20px;" onclick="App.closeModal('stats-modal')">關閉</button>
+        </div>
+    </div>
+
+    <!-- 重置確認 Modal -->
+    <div class="modal-overlay" id="reset-modal">
+        <div class="modal-content">
+            <h3 style="color:var(--accent-red); text-align:center;">⚠️ 警告</h3>
+            <p style="text-align:center; margin:20px 0; color:var(--text-muted); line-height:1.5;">確定要刪除所有資料並重置嗎？<br>這會清空你的記帳紀錄。</p>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-outline" onclick="App.closeModal('reset-modal')">取消</button>
+                <button class="btn btn-danger" onclick="App.doReset()">確定刪除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🆕 刪除確認 Modal -->
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal-content">
+            <h3 style="color:var(--accent-red); text-align:center;">🗑️ 刪除記錄</h3>
+            <p style="text-align:center; margin:20px 0; color:var(--text-muted); line-height:1.5;">
+                確定要刪除這筆記錄嗎？<br>
+                <span id="delete-target-info" style="font-size:0.9rem; color:var(--text-main); font-weight:bold; margin-top:5px; display:block;"></span>
+            </p>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-outline" onclick="App.closeDeleteModal()">取消</button>
+                <button class="btn btn-danger" id="confirm-delete-btn">確定刪除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* --- 資料定義 --- */
+        const CATEGORIES = {
+            expense: [
+                { id: 'food', icon: '🍔', name: '餐飲' },
+                { id: 'transport', icon: '🚕', name: '交通' },
+                { id: 'fun', icon: '🎮', name: '娛樂' },
+                { id: 'study', icon: '📚', name: '學習' },
+                { id: 'shop', icon: '🛒', name: '購物' },
+                { id: 'other', name: '其他', icon: '🏠' }
+            ],
+            income: [
+                { id: 'lucky', icon: '🧧', name: '利是' },
+                { id: 'work', icon: '💰', name: '打工' },
+                { id: 'reward', icon: '💁', name: '獎勵' },
+                { id: 'invest', icon: '📈', name: '投資' },
+                { id: 'other_in', icon: '💰', name: '其他' }
+            ]
+        };
+
+        const VOICES = {
+            normal: {
+                low: "您的預算已經消耗過半，建議減少非必要開銷。",
+                high: "您的財務狀況非常健康，請保持這個良好的理財習慣。",
+                negative: "警報！您已經透支，請立即停止所有消費行為。",
+                welcome: "歡迎回來，讓我們檢視一下今天的財務狀況。",
+                tip: "記帳是理財的基石，加油。"
+            },
+            cute: {
+                low: "哎呀！錢錢變少了耶，我們一起省省吧！🥺",
+                high: "哇！你存得好好多喔，是不是可以買喜歡的東西了？✨",
+                negative: "嗚嗚...錢不夠用了啦，快住手！💸",
+                welcome: "嗨！今天也是充實的一天呢！💖",
+                tip: "每一分錢都是小豬豬的一部分喔～"
+            },
+            boss: {
+                low: "這個進度我不滿意。下半個月給我控制成本。",
+                high: "不錯，看來你懂得如何運用資金。繼續保持。",
+                negative: "你的表現讓我很失望。赤字是不可接受的。",
+                welcome: "匯報今天的財務數據。",
+                tip: "嚴格執行預算紀律。"
+            }
+        };
+
+        /* --- 核心應用程式 --- */
+        const App = {
+            data: {
+                allowance: 0,
+                transactions: [],
+                settings: {
+                    theme: 'dark',
+                    voice: 'normal'
+                },
+                currentDate: new Date(),
+                tempRecord: { type: 'expense', categoryId: 'food' }
+            },
+
+            init() {
+                this.loadData();
+                this.applyTheme();
+                this.updateVoiceUI();
+                this.router();
+                this.bindEvents(); // 綁定新的事件
+            },
+
+            /* --- 路由與導航 --- */
+            router() {
+                // 檢查是否需要初始化
+                if (this.data.allowance <= 0) {
+                    this.switchPage('page-setup');
+                    this.toggleBottomBar(false);
+                } else {
+                    // 預設前往 Dashboard
+                    this.switchPage('page-dashboard');
+                    this.toggleBottomBar(true);
+                    this.renderDashboard();
+                }
+            },
+
+            goHome() {
+                if (this.data.allowance <= 0) {
+                    this.switchPage('page-setup');
+                } else {
+                    this.switchPage('page-dashboard');
+                    this.toggleBottomBar(true);
+                    this.renderDashboard();
+                }
+            },
+
+            goToSettings() {
+                // 進入設定頁時，填入當前預算
+                document.getElementById('current-budget-display').textContent = `$${this.data.allowance}`;
+                document.getElementById('new-budget-input').value = '';
+                
+                this.switchPage('page-settings');
+                this.toggleBottomBar(false);
+            },
+
+            switchPage(pageId) {
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById(pageId).classList.add('active');
+                
+                // 更新標題
+                const title = document.querySelector('header h1');
+                if (pageId === 'page-settings') title.innerHTML = '⚙️ 設定';
+                else if (pageId === 'page-dashboard') title.innerHTML = '💰 理財小助手';
+                else title.innerHTML = '🐷 設定預算';
+            },
+
+            toggleBottomBar(show) {
+                const bar = document.getElementById('bottom-bar');
+                if (show) bar.classList.remove('hidden');
+                else bar.classList.add('hidden');
+            },
+
+            /* --- 功能實作 --- */
+            initBudget() {
+                const val = parseFloat(document.getElementById('init-allowance').value);
+                if (!val || val <= 0) return alert('請輸入有效金額');
+                this.data.allowance = val;
+                this.saveData();
+                this.router();
+                this.showToast('預算設定成功', '🎉');
+            },
+
+            updateBudget() {
+                const input = document.getElementById('new-budget-input');
+                const val = parseFloat(input.value);
+                
+                if (!val || val <= 0) {
+                    this.showToast('請輸入有效的金額', '⚠️');
+                    return;
+                }
+
+                this.data.allowance = val;
+                this.saveData();
+                
+                // 更新顯示
+                document.getElementById('current-budget-display').textContent = `$${val}`;
+                input.value = '';
+                
+                this.showToast('預算已更新', '✅');
+            },
+
+            setTheme(theme, el) {
+                this.data.settings.theme = theme;
+                this.saveData();
+                this.applyTheme();
+                
+                document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+                el.classList.add('selected');
+            },
+
+            applyTheme() {
+                document.documentElement.setAttribute('data-theme', this.data.settings.theme);
+            },
+
+            setVoice(voice, el) {
+                this.data.settings.voice = voice;
+                this.saveData();
+                this.updateVoiceUI();
+                
+                document.querySelectorAll('.voice-option').forEach(c => {
+                    c.classList.remove('selected');
+                    c.querySelector('span:last-child').textContent = '';
+                });
+                el.classList.add('selected');
+                el.querySelector('span:last-child').textContent = '✓';
+                
+                // 立即更新 Dashboard 提示
+                if (document.getElementById('page-dashboard').classList.contains('active')) {
+                    this.updateTip();
+                }
+            },
+
+            updateVoiceUI() {
+                // 確保 UI 狀態正確
+            },
+
+            /* --- 儀表板邏輯 --- */
+            renderDashboard() {
+                // 1. 計算
+                let totalExpense = 0, totalIncome = 0;
+                this.data.transactions.forEach(t => {
+                    if (t.type === 'expense') totalExpense += t.amount;
+                    else totalIncome += t.amount;
+                });
+                const balance = this.data.allowance - totalExpense + totalIncome;
+
+                // 2. 顯示餘額
+                const balEl = document.getElementById('display-balance');
+                balEl.textContent = `$${balance.toLocaleString()}`;
+                balEl.style.color = balance < 0 ? 'var(--accent-red)' : 'var(--accent-gold)';
+
+                // 3. 顯示日期
+                const d = this.data.currentDate;
+                const isToday = this.isSameDay(new Date(), d);
+                document.getElementById('current-date').textContent = isToday ? '今天' : `${d.getMonth()+1}/${d.getDate()}`;
+
+                // 4. 顯示列表
+                const dateStr = this.formatDateStr(d);
+                const todayRecords = this.data.transactions
+                    .filter(t => t.dateString === dateStr)
+                    .reverse(); // 最新一筆在最上面
+                
+                const listEl = document.getElementById('record-list');
+                listEl.innerHTML = '';
+                
+                if (todayRecords.length === 0) {
+                    listEl.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px 0; opacity:0.6;">
+                        <div style="font-size:2rem; margin-bottom:10px;">📝</div>
+                        <div>今天還沒有記錄</div>
+                    </div>`;
+                } else {
+                    todayRecords.forEach(t => {
+                        const isEx = t.type === 'expense';
+                        const cat = this.getCategoryInfo(t.type, t.categoryId);
+                        const div = document.createElement('div');
+                        div.className = 'record-item';
+                        // 🆕 更新列表 HTML，加入刪除按鈕
+                        div.innerHTML = `
+                            <div class="record-left">
+                                <div class="r-icon">${cat.icon}</div>
+                                <div>
+                                    <div style="font-weight:600;">${cat.name}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${isEx?'支出':'收入'}</div>
+                                </div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="font-weight:bold; font-size:1rem; color:${isEx?'var(--accent-red)':'var(--accent-green)'}">
+                                    ${isEx?'-':'+'}$${t.amount}
+                                </div>
+                                <!-- 🆕 刪除按鈕 -->
+                                <button class="delete-btn" onclick="event.stopPropagation(); App.openDeleteModal(${t.id}, ${t.amount}, '${t.type}')">
+                                    🗑️
+                                </button>
+                            </div>
+                        `;
+                        listEl.appendChild(div);
+                    });
+                }
+
+                // 5. 更新建議
+                this.updateTip(balance, totalExpense, totalIncome);
+            },
+
+            updateTip(balance, expense, income) {
+                const v = VOICES[this.data.settings.voice];
+                const tipEl = document.getElementById('ai-tip');
+                let text = "";
+
+                if (balance < 0) text = v.negative;
+                else if (balance > this.data.allowance * 0.8) text = v.high;
+                else if (expense > this.data.allowance * 0.5) text = v.low;
+                else text = v.welcome;
+
+                tipEl.textContent = text;
+            },
+
+            /* --- Modal 邏輯 --- */
+            openAddModal() {
+                document.getElementById('add-modal').classList.add('open');
+                document.getElementById('add-amount').value = '';
+                this.switchType('expense'); 
+                setTimeout(() => document.getElementById('add-amount').focus(), 100);
+            },
+
+            switchType(type) {
+                this.data.tempRecord.type = type;
+                document.getElementById('type-expense').classList.toggle('active', type === 'expense');
+                document.getElementById('type-income').classList.toggle('active', type === 'income');
+                this.renderCategories();
+            },
+
+            renderCategories() {
+                const container = document.getElementById('category-selector');
+                container.innerHTML = '';
+                const list = CATEGORIES[this.data.tempRecord.type];
+                
+                list.forEach((cat, index) => {
+                    const el = document.createElement('div');
+                    el.className = `cat-item ${index === 0 ? 'selected' : ''}`;
+                    el.onclick = () => {
+                        document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('selected'));
+                        el.classList.add('selected');
+                        this.data.tempRecord.categoryId = cat.id;
+                    };
+                    el.innerHTML = `
+                        <div class="cat-icon">${cat.icon}</div>
+                        <div class="cat-name">${cat.name}</div>
+                    `;
+                    container.appendChild(el);
+                });
+                this.data.tempRecord.categoryId = list[0].id;
+            },
+
+            confirmAdd() {
+                const amount = parseFloat(document.getElementById('add-amount').value);
+                if (!amount || amount <= 0) {
+                    this.showToast('請輸入金額', '⚠️');
+                    return;
+                }
+
+                const record = {
+                    id: Date.now(),
+                    dateString: this.formatDateStr(this.data.currentDate),
+                    amount: amount,
+                    type: this.data.tempRecord.type,
+                    categoryId: this.data.tempRecord.categoryId
+                };
+
+                this.data.transactions.push(record);
+                this.saveData();
+                this.closeModal('add-modal');
+                this.renderDashboard();
+                this.showToast('已記錄', '✅');
+            },
+
+            /* --- 🆕 刪除功能邏輯 --- */
+            bindEvents() {
+                // 綁定刪除確認按鈕
+                document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+                    this.confirmDelete();
+                });
+            },
+
+            openDeleteModal(id, amount, type) {
+                this.pendingDeleteId = id;
+                const typeText = type === 'expense' ? '支出' : '收入';
+                document.getElementById('delete-target-info').textContent = `${typeText} $${amount}`;
+                document.getElementById('delete-modal').classList.add('open');
+            },
+
+            closeDeleteModal() {
+                this.pendingDeleteId = null;
+                document.getElementById('delete-modal').classList.remove('open');
+            },
+
+            confirmDelete() {
+                if (!this.pendingDeleteId) return;
+                
+                // 過濾掉該 ID 的記錄
+                this.data.transactions = this.data.transactions.filter(t => t.id !== this.pendingDeleteId);
+                
+                this.saveData();
+                this.renderDashboard(); // 重新計算並渲染
+                this.closeDeleteModal();
+                this.showToast('記錄已刪除', '🗑️');
+            },
+
+            /* --- 工具函式 --- */
+            formatDateStr(date) {
+                return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+            },
+
+            isSameDay(d1, d2) {
+                return d1.getFullYear() === d2.getFullYear() &&
+                       d1.getMonth() === d2.getMonth() &&
+                       d1.getDate() === d2.getDate();
+            },
+
+            getCategoryInfo(type, id) {
+                const list = CATEGORIES[type] || [];
+                return list.find(c => c.id === id) || { icon: '❓', name: '未知' };
+            },
+
+            changeDate(days) {
+                this.data.currentDate.setDate(this.data.currentDate.getDate() + days);
+                this.saveData();
+                this.renderDashboard();
+            },
+
+            closeModal(id) {
+                document.getElementById(id).classList.remove('open');
+            },
+
+            openStats() {
+                let e = 0, i = 0;
+                this.data.transactions.forEach(t => t.type === 'expense' ? e += t.amount : i += t.amount);
+                const b = this.data.allowance - e + i;
+                
+                document.getElementById('stat-allowance').innerText = `$${this.data.allowance}`;
+                document.getElementById('stat-income').innerText = `+$${i}`;
+                document.getElementById('stat-expense').innerText = `-$${e}`;
+                document.getElementById('stat-balance').innerText = `$${b}`;
+                document.getElementById('stats-modal').classList.add('open');
+            },
+
+            openResetModal() {
+                document.getElementById('reset-modal').classList.add('open');
+            },
+
+            doReset() {
+                localStorage.removeItem('financeUltimate');
+                location.reload();
+            },
+
+            showToast(msg, icon) {
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+                    background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;
+                    border-radius: 50px; z-index: 1000; display: flex; align-items: center; gap: 8px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.3); font-size: 0.9rem;
+                    animation: fadeIn 0.3s;
+                `;
+                toast.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(-50%) translateY(-20px)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 2000);
+            },
+
+            loadData() {
+                const raw = localStorage.getItem('financeUltimate');
+                if (raw) {
+                    try {
+                        const parsed = JSON.parse(raw);
+                        this.data = { ...this.data, ...parsed };
+                        if (parsed.currentDate) this.data.currentDate = new Date(parsed.currentDate);
+                    } catch (e) {
+                        console.error("Data load error", e);
+                    }
+                }
+            },
+
+            saveData() {
+                localStorage.setItem('financeUltimate', JSON.stringify(this.data));
+            }
+        };
+
+        // 啟動
+        window.addEventListener('DOMContentLoaded', () => {
+            App.init();
+        });
+    </script>
+</body>
+</html>
